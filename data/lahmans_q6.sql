@@ -81,17 +81,24 @@
 	  
 -- 6. Find the player who had the most success stealing bases in 2016, where __success__ is measured as the percentage of stolen base attempts which are successful. (A stolen base attempt results either in a stolen base or being caught stealing.) Consider only players who attempted _at least_ 20 stolen bases.
 	
-	  SELECT playerid, SUM(sb), SUM(cs), SUM(sb)+SUM(cs) AS tot
+	  SELECT playerid, SUM(sb) AS stole_base, SUM(cs) AS caught_stealing, CAST(sb AS float)/CAST(sb AS float)+CAST(cs AS float) AS tot
 	  FROM batting
-	  WHERE yearid = 2016 AND tot >= 20
+	  WHERE yearid = 2016 AND sb+cs >= 20
 	  GROUP BY playerid
 	  
-	SELECT playerid, cs, sb, CAST(cs AS dec)/CAST(sb AS dec)
-	FROM fielding
-	WHERE yearid = 2016 AND sb+cs => AND playerid = 'avilaal01'
-
 -- 7.  From 1970 – 2016, what is the largest number of wins for a team that did not win the world series? What is the smallest number of wins for a team that did win the world series? Doing this will probably result in an unusually small number of wins for a world series champion – determine why this is the case. Then redo your query, excluding the problem year. How often from 1970 – 2016 was it the case that a team with the most wins also won the world series? What percentage of the time?
-
+	
+	SELECT name, max(w) AS wins, yearid
+	FROM teams
+	WHERE yearid between 1970 AND 2016 AND WSWin = 'N'
+	GROUP BY name, yearid
+	LIMIT 1
+	
+	SELECT name, min(w) AS wins
+	FROM teams
+	WHERE yearid between 1970 AND 2016 AND WSWin ='Y'
+	GROUP BY name
+	LIMIT 1
 
 -- 8. Using the attendance figures from the homegames table, find the teams and parks which had the top 5 average attendance per game in 2016 (where average attendance is defined as total attendance divided by number of games). Only consider parks where there were at least 10 games played. Report the park name, team name, and average attendance. Repeat for the lowest 5 average attendance.
 
